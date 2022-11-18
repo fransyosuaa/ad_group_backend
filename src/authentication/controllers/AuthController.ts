@@ -8,32 +8,32 @@ import {
 } from '@nestjs/common';
 import { CreateUserRequest, LoginRequest } from '../requests';
 import { LogoutRequest } from '../requests/UserRequests';
-import { UserService } from '../services';
+import { AuthService } from '../services';
 
-@Controller('/user')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+@Controller('/auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
 
   @Get('/ping')
   ping(): string {
-    return this.userService.ping();
+    return this.authService.ping();
   }
 
   @Post('/register')
   @UsePipes(ValidationPipe)
   async register(@Body() payload: CreateUserRequest) {
-    return this.userService.register(payload);
+    return this.authService.register(payload);
   }
 
   @Post('/login')
   @UsePipes(ValidationPipe)
   async login(@Body() payload: LoginRequest) {
-    return this.userService.login(payload);
+    return this.authService.login(payload);
   }
 
   @Post('/logout')
   @UsePipes(ValidationPipe)
   async logout(@Body() payload: LogoutRequest) {
-    return this.userService.logout(payload);
+    return this.authService.logout(payload);
   }
 }

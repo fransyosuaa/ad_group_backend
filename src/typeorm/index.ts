@@ -1,6 +1,6 @@
 import { IpLabel } from './IpLabel';
 import { IpLabelLog } from './IpLabelLog';
-import { User, UserLog } from '../user/entities';
+import { User, UserLog } from '../authentication/entities';
 
 export { IpLabel, IpLabelLog, User, UserLog };
 

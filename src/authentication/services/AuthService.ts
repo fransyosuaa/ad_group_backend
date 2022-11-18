@@ -11,7 +11,7 @@ import { CreateUserLogRequest, LogoutRequest } from '../requests/UserRequests';
 import { ActionLogType } from '../enums';
 
 @Injectable()
-export class UserService {
+export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -39,7 +39,7 @@ export class UserService {
     userEntity.password = await bcrypt.hash(req.password, 10);
     userEntity.token = this.createToken(userEntity.id, req.email);
     await this.userRepository.save(userEntity);
-    await this.createLog({ email: req.email, action: ActionLogType.REGIST });
+    this.createLog({ email: req.email, action: ActionLogType.REGIST });
 
     return mapLoginResponse(userEntity);
   }
@@ -56,7 +56,7 @@ export class UserService {
         conflictPaths: ['id'],
         skipUpdateIfNoValuesChanged: true,
       });
-      await this.createLog({ email: req.email, action: ActionLogType.LOGIN });
+      this.createLog({ email: req.email, action: ActionLogType.LOGIN });
       return mapLoginResponse(user);
     }
     throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
@@ -71,7 +71,7 @@ export class UserService {
     if (user) {
       user.token = '';
       await this.userRepository.save(user);
-      await this.createLog({ email: req.email, action: ActionLogType.LOGOUT });
+      this.createLog({ email: req.email, action: ActionLogType.LOGOUT });
       return mapLoginResponse(user);
     }
     throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
@@ -84,10 +84,10 @@ export class UserService {
     return token;
   }
 
-  async createLog(req: CreateUserLogRequest) {
+  createLog(req: CreateUserLogRequest) {
     const newLog = new UserLog();
     newLog.email = req.email;
     newLog.action = req.action;
-    await this.userLogRepo.save(newLog);
+    this.userLogRepo.save(newLog);
   }
 }
