@@ -4,3 +4,18 @@ export interface PaginationDataResponse {
   perPage: number;
   totalItems: number;
 }
+
+export interface QueryFilter {
+  queryStrings: string;
+  queryParams: object;
+}
+
+export interface SuccessPaginationResponse {
+  data: any;
+  meta: {
+    page: number;
+    perPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}

@@ -1,0 +1,1 @@
+export { IpLabelController } from './IpLabelController';

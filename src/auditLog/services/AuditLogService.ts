@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationRequest } from 'src/common/requests/PaginationRequest';
-import { PaginationDataResponse } from 'src/common/response';
+import {
+  PaginationDataResponse,
+  SuccessPaginationResponse,
+} from 'src/common/response';
 import {
   getLimit,
   getOffset,
@@ -23,11 +26,13 @@ export class AuditLogService {
     return 'pong';
   }
 
-  async getUserLogs(request: GetLogsByEmailRequest) {
-    const { email } = request;
+  async getUserLogs(
+    request: GetLogsByEmailRequest,
+  ): Promise<SuccessPaginationResponse> {
+    const { email, page, perPage } = request;
     const paginationReq = new PaginationRequest();
-    paginationReq.page = parseInt(request.page, 10);
-    paginationReq.perPage = parseInt(request.perPage, 10);
+    paginationReq.page = parseInt(page, 10);
+    paginationReq.perPage = parseInt(perPage, 10);
 
     const queryParams = {
       email,

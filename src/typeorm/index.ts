@@ -1,5 +1,4 @@
-import { IpLabel } from './IpLabel';
-import { IpLabelLog } from './IpLabelLog';
+import { IpLabel, IpLabelLog } from '../ipLabel/entities';
 import { User, UserLog } from '../authentication/entities';
 
 export { IpLabel, IpLabelLog, User, UserLog };

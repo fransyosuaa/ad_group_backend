@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import entities from './typeorm';
 import { AuthenticationModule } from './authentication';
 import { AuditLogModule } from './auditLog';
+import { IpLabelModule } from './ipLabel';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AuditLogModule } from './auditLog';
     }),
     AuthenticationModule,
     AuditLogModule,
+    IpLabelModule,
   ],
   controllers: [AppController],
   providers: [AppService],
