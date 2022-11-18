@@ -1,11 +1,12 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import { Column, PrimaryColumn, Entity } from 'typeorm';
+import { v4 } from 'uuid';
 
 @Entity()
 export class IpLabelLog {
-  @PrimaryGeneratedColumn({
-    type: 'bigint',
+  @PrimaryColumn({
+    type: 'uuid',
   })
-  id: number;
+  id: string = v4();
 
   @Column({
     nullable: false,

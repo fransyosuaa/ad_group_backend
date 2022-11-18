@@ -19,7 +19,10 @@ $ cd ad_group_backend
 $ npm i
 ```
 
+### Copy `.env.template` file and rename it into `.env`
+
 ### Run it
+
 ```
 $ npm run start
 ```

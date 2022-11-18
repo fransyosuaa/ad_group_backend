@@ -1,11 +1,13 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { v4 } from 'uuid';
+import { UserType } from '../enums';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn({
-    type: 'bigint',
+  @PrimaryColumn({
+    type: 'uuid',
   })
-  id: number;
+  id: string = v4();
 
   @Column({
     unique: true,
@@ -19,4 +21,10 @@ export class User {
     default: '',
   })
   password: string;
+
+  @Column({
+    nullable: false,
+    default: '',
+  })
+  type: UserType = UserType.REGULER;
 }

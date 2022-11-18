@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { CreateUserRequest } from '../requests';
 import { User } from '../entities';
-import { sendErrorResponse, sendSuccessResponse } from 'src/utils';
+import { mapLoginResponse, sendSuccessResponse } from 'src/utils';
+import { LoginResponse } from '../response/LoginResponse';
 
 @Injectable()
 export class UserService {
@@ -17,24 +18,27 @@ export class UserService {
     return 'pong';
   }
 
-  async register(req: CreateUserRequest) {
+  async register(req: CreateUserRequest): Promise<LoginResponse> {
     const user = await this.userRepository.findOne({
       where: {
         email: req.email,
       },
     });
     if (user) {
-      return sendErrorResponse(409, 'That email already registered!');
+      throw new HttpException(
+        'That email already registered!',
+        HttpStatus.CONFLICT,
+      );
     }
-    const encryptedPassword = await bcrypt.hash(req.password, 10);
-    req.password = encryptedPassword;
+    req.password = await bcrypt.hash(req.password, 10);
     const newUser = this.userRepository.create(req);
     await this.userRepository.save(newUser);
     const token = this.createToken(newUser.id, req.email);
-    return sendSuccessResponse({ ...newUser, token });
+    const result = mapLoginResponse(newUser);
+    return sendSuccessResponse({ ...result, token });
   }
 
-  async login(req: CreateUserRequest) {
+  async login(req: CreateUserRequest): Promise<LoginResponse> {
     const user = await this.userRepository.findOne({
       where: {
         email: req.email,
@@ -42,9 +46,10 @@ export class UserService {
     });
     if (user && (await bcrypt.compare(req.password, user.password))) {
       const token = this.createToken(user.id, req.email);
-      return sendSuccessResponse({ ...user, token });
+      const result = mapLoginResponse(user);
+      return sendSuccessResponse({ ...result, token });
     }
-    return sendErrorResponse(400, 'User not found!');
+    throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
   }
 
   createToken(id, email) {
