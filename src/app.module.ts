@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import entities from './typeorm';
 import { AuthenticationModule } from './authentication';
+import { AuditLogModule } from './auditLog';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthenticationModule } from './authentication';
       entities,
     }),
     AuthenticationModule,
+    AuditLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

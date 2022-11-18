@@ -6,8 +6,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { CreateUserRequest, LoginRequest } from '../requests';
-import { LogoutRequest } from '../requests/UserRequests';
+import { CreateUserRequest, LoginRequest, LogoutRequest } from '../requests';
 import { AuthService } from '../services';
 
 @Controller('/auth')

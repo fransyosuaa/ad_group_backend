@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { CreateUserRequest } from '../requests';
 import { User, UserLog } from '../entities';
-import { mapLoginResponse } from 'src/utils';
+import { mapLoginResponse } from '../../common/utils';
 import { LoginResponse } from '../response/LoginResponse';
 import { CreateUserLogRequest, LogoutRequest } from '../requests/UserRequests';
 import { ActionLogType } from '../enums';

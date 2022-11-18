@@ -1,1 +1,6 @@
-export { CreateUserRequest, LoginRequest } from './UserRequests';
+export {
+  CreateUserRequest,
+  LoginRequest,
+  LogoutRequest,
+  CreateUserLogRequest,
+} from './UserRequests';
