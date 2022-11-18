@@ -4,15 +4,19 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { CreateUserRequest } from '../requests';
-import { User } from '../entities';
-import { mapLoginResponse, sendSuccessResponse } from 'src/utils';
+import { User, UserLog } from '../entities';
+import { mapLoginResponse } from 'src/utils';
 import { LoginResponse } from '../response/LoginResponse';
+import { CreateUserLogRequest, LogoutRequest } from '../requests/UserRequests';
+import { ActionLogType } from '../enums';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserLog)
+    private readonly userLogRepo: Repository<UserLog>,
   ) {}
   ping(): string {
     return 'pong';
@@ -30,12 +34,14 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
-    req.password = await bcrypt.hash(req.password, 10);
-    const newUser = this.userRepository.create(req);
-    await this.userRepository.save(newUser);
-    const token = this.createToken(newUser.id, req.email);
-    const result = mapLoginResponse(newUser);
-    return sendSuccessResponse({ ...result, token });
+    const userEntity = new User();
+    userEntity.email = req.email;
+    userEntity.password = await bcrypt.hash(req.password, 10);
+    userEntity.token = this.createToken(userEntity.id, req.email);
+    await this.userRepository.save(userEntity);
+    await this.createLog({ email: req.email, action: ActionLogType.REGIST });
+
+    return mapLoginResponse(userEntity);
   }
 
   async login(req: CreateUserRequest): Promise<LoginResponse> {
@@ -45,17 +51,43 @@ export class UserService {
       },
     });
     if (user && (await bcrypt.compare(req.password, user.password))) {
-      const token = this.createToken(user.id, req.email);
-      const result = mapLoginResponse(user);
-      return sendSuccessResponse({ ...result, token });
+      user.token = this.createToken(user.id, req.email);
+      await this.userRepository.upsert(user, {
+        conflictPaths: ['id'],
+        skipUpdateIfNoValuesChanged: true,
+      });
+      await this.createLog({ email: req.email, action: ActionLogType.LOGIN });
+      return mapLoginResponse(user);
     }
     throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
   }
 
-  createToken(id, email) {
+  async logout(req: LogoutRequest) {
+    const user = await this.userRepository.findOne({
+      where: {
+        email: req.email,
+      },
+    });
+    if (user) {
+      user.token = '';
+      await this.userRepository.save(user);
+      await this.createLog({ email: req.email, action: ActionLogType.LOGOUT });
+      return mapLoginResponse(user);
+    }
+    throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
+  }
+
+  private createToken(id, email) {
     const token = jwt.sign({ user_id: id, email }, process.env.TOKEN_KEY, {
       expiresIn: '2h',
     });
     return token;
+  }
+
+  async createLog(req: CreateUserLogRequest) {
+    const newLog = new UserLog();
+    newLog.email = req.email;
+    newLog.action = req.action;
+    await this.userLogRepo.save(newLog);
   }
 }

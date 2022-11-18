@@ -10,7 +10,6 @@ export class UserLog {
   id: string = v4();
 
   @Column({
-    unique: true,
     nullable: false,
     default: '',
   })

@@ -27,4 +27,10 @@ export class User {
     default: '',
   })
   type: UserType = UserType.REGULER;
+
+  @Column({
+    nullable: false,
+    default: '',
+  })
+  token: string;
 }
