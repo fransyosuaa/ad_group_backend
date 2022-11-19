@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -7,6 +12,9 @@ import entities from './typeorm';
 import { AuthenticationModule } from './authentication';
 import { AuditLogModule } from './auditLog';
 import { IpLabelModule } from './ipLabel';
+import { AuthMiddleware } from './authentication/middleware/AuthMiddleware';
+import { AuditLogController } from './auditLog/controllers';
+import { IpLabelController } from './ipLabel/controllers';
 
 @Module({
   imports: [
@@ -28,4 +36,11 @@ import { IpLabelModule } from './ipLabel';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude({ path: '(.*)ping', method: RequestMethod.GET })
+      .forRoutes(AuditLogController, IpLabelController);
+  }
+}
