@@ -6,7 +6,7 @@ import { IpLabelLog, UserLog } from 'src/typeorm';
 
 @Module({
   imports: [
-    // TypeOrmModule.forFeature([IpLabelLog]),
+    TypeOrmModule.forFeature([IpLabelLog]),
     TypeOrmModule.forFeature([UserLog]),
   ],
   controllers: [AuditLogController],

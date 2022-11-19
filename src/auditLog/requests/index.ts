@@ -1,1 +1,1 @@
-export { GetLogsByEmailRequest } from './AuditLogRequest';
+export { GetLogsByEmailRequest, GetIpLogsById } from './AuditLogRequest';

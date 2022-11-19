@@ -53,6 +53,7 @@ export class IpLabelService {
     await this.ipRepo.save(newIpLabel);
 
     const addLog = new CreateIpLabelLogRequest();
+    addLog.ipLabelId = newIpLabel.id;
     addLog.createdBy = req.email;
     addLog.oldLabel = '';
     addLog.newLabel = req.label;
@@ -73,6 +74,7 @@ export class IpLabelService {
       throw new HttpException('IP Address is not found!', HttpStatus.NOT_FOUND);
     }
     const addLog = new CreateIpLabelLogRequest();
+    addLog.ipLabelId = ipLabel.id;
     addLog.createdBy = req.email;
     addLog.oldLabel = ipLabel.label;
     addLog.newLabel = req.label;
@@ -88,8 +90,9 @@ export class IpLabelService {
     return mapIpLabelResponse(ipLabel);
   }
 
-  createLog(req: CreateIpLabelLogRequest) {
+  createLog(req: CreateIpLabelLogRequest): void {
     const newLog = new IpLabelLog();
+    newLog.ipLabelId = req.ipLabelId;
     newLog.ipAddress = req.ipAddress;
     newLog.oldLabel = req.oldLabel;
     newLog.newLabel = req.newLabel;

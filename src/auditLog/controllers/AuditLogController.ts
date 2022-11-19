@@ -5,7 +5,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { GetLogsByEmailRequest } from '../requests';
+import { GetIpLogsById, GetLogsByEmailRequest } from '../requests';
 import { AuditLogService } from '../services';
 
 @Controller('/audit-log')
@@ -19,7 +19,13 @@ export class AuditLogController {
 
   @Get('/user')
   @UsePipes(ValidationPipe)
-  async register(@Query() query: GetLogsByEmailRequest) {
+  async getUserLogs(@Query() query: GetLogsByEmailRequest) {
     return this.logService.getUserLogs(query);
+  }
+
+  @Get('/ip-label')
+  @UsePipes(ValidationPipe)
+  async getIpLabelLogs(@Query() query: GetIpLogsById) {
+    return this.logService.getIpLabelLogs(query);
   }
 }

@@ -1,5 +1,11 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
-import { ActionLogType } from '../enums';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
+import { ActionLogType, UserType } from '../enums';
 
 export class CreateUserRequest {
   @IsNotEmpty()
@@ -9,6 +15,10 @@ export class CreateUserRequest {
   @IsNotEmpty()
   @MinLength(10)
   password: string;
+
+  @IsOptional()
+  @IsString()
+  type: UserType;
 }
 
 export class LoginRequest extends CreateUserRequest {}

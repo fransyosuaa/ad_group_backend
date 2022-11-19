@@ -9,6 +9,13 @@ export class IpLabelLog {
   id: string = v4();
 
   @Column({
+    type: 'uuid',
+    nullable: false,
+    default: '',
+  })
+  ipLabelId: string;
+
+  @Column({
     nullable: false,
     default: '',
   })

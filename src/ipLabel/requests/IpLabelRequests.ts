@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateIpLabel {
@@ -22,6 +23,10 @@ export class CreateIpLabel {
 export class UpdateIpLabel extends CreateIpLabel {}
 
 export class CreateIpLabelLogRequest {
+  @IsNotEmpty()
+  @IsUUID()
+  ipLabelId: string;
+
   @IsNotEmpty()
   @IsIP()
   ipAddress: string;

@@ -6,7 +6,7 @@ import * as jwt from 'jsonwebtoken';
 import { CreateUserRequest } from '../requests';
 import { User, UserLog } from '../entities';
 import { mapLoginResponse } from '../../common/utils';
-import { LoginResponse } from '../response/LoginResponse';
+import { LoginResponse, LogoutResponse } from '../response/AuthResponse';
 import { CreateUserLogRequest, LogoutRequest } from '../requests/UserRequests';
 import { ActionLogType } from '../enums';
 
@@ -38,6 +38,9 @@ export class AuthService {
     userEntity.email = req.email;
     userEntity.password = await bcrypt.hash(req.password, 10);
     userEntity.token = this.createToken(userEntity.id, req.email);
+    if (req.type) {
+      userEntity.type = req.type;
+    }
     await this.userRepository.save(userEntity);
     this.createLog({ email: req.email, action: ActionLogType.REGIST });
 
@@ -62,7 +65,7 @@ export class AuthService {
     throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
   }
 
-  async logout(req: LogoutRequest) {
+  async logout(req: LogoutRequest): Promise<LogoutResponse> {
     const user = await this.userRepository.findOne({
       where: {
         email: req.email,
@@ -77,14 +80,14 @@ export class AuthService {
     throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
   }
 
-  private createToken(id, email) {
+  private createToken(id, email): string {
     const token = jwt.sign({ user_id: id, email }, process.env.TOKEN_KEY, {
       expiresIn: '2h',
     });
     return token;
   }
 
-  createLog(req: CreateUserLogRequest) {
+  createLog(req: CreateUserLogRequest): void {
     const newLog = new UserLog();
     newLog.email = req.email;
     newLog.action = req.action;

@@ -10,15 +10,15 @@ import {
   getOffset,
   sendSuccessPaginationResponse,
 } from 'src/common/utils';
-import { UserLog } from 'src/typeorm';
+import { IpLabelLog, UserLog } from 'src/typeorm';
 import { Repository } from 'typeorm';
-import { GetLogsByEmailRequest } from '../requests';
+import { GetIpLogsById, GetLogsByEmailRequest } from '../requests';
 
 @Injectable()
 export class AuditLogService {
   constructor(
-    // @InjectRepository(User)
-    // private readonly userRepository: Repository<User>,
+    @InjectRepository(IpLabelLog)
+    private readonly ipLabelLogRepo: Repository<IpLabelLog>,
     @InjectRepository(UserLog)
     private readonly userLogRepo: Repository<UserLog>,
   ) {}
@@ -46,6 +46,34 @@ export class AuditLogService {
       .getManyAndCount();
     const successData: PaginationDataResponse = {
       data: userLogs,
+      page: paginationReq.page,
+      perPage: paginationReq.perPage,
+      totalItems: count,
+    };
+    return sendSuccessPaginationResponse(successData);
+  }
+
+  async getIpLabelLogs(
+    request: GetIpLogsById,
+  ): Promise<SuccessPaginationResponse> {
+    const { id, page, perPage } = request;
+    const paginationReq = new PaginationRequest();
+    paginationReq.page = parseInt(page, 10);
+    paginationReq.perPage = parseInt(perPage, 10);
+
+    const queryParams = {
+      id,
+    };
+    const [ipLabelLogs, count]: [IpLabelLog[], number] =
+      await this.ipLabelLogRepo
+        .createQueryBuilder('ipLog')
+        .where('ipLog.ipLabelId = :id', queryParams)
+        .addOrderBy('ipLog.createdAt', 'DESC')
+        .skip(getOffset(paginationReq))
+        .take(getLimit(paginationReq))
+        .getManyAndCount();
+    const successData: PaginationDataResponse = {
+      data: ipLabelLogs,
       page: paginationReq.page,
       perPage: paginationReq.perPage,
       totalItems: count,
