@@ -7,6 +7,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "dev": "npm run start:dev",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -68,6 +69,17 @@
       "js",
       "json",
       "ts"
+    ],
+    "roots": [
+      "<rootDir>"
+    ],
+    "modulePaths": [
+      "<rootDir>",
+      "<rootDir>/../"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "src"
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
