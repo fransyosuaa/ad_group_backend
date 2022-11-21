@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { setWith } from 'lodash';
 import { PaginationRequest } from 'src/common/requests/PaginationRequest';
 import {
   PaginationDataResponse,
+  QueryFilter,
   SuccessPaginationResponse,
 } from 'src/common/response';
 import {
@@ -34,12 +36,11 @@ export class AuditLogService {
     paginationReq.page = parseInt(page, 10);
     paginationReq.perPage = parseInt(perPage, 10);
 
-    const queryParams = {
-      email,
-    };
+    const { queryStrings, queryParams } = this.buildStringParams(email);
+
     const [userLogs, count]: [UserLog[], number] = await this.userLogRepo
       .createQueryBuilder('userLog')
-      .where('userLog.email = :email', queryParams)
+      .where(queryStrings, queryParams)
       .addOrderBy('userLog.createdAt', 'DESC')
       .skip(getOffset(paginationReq))
       .take(getLimit(paginationReq))
@@ -79,5 +80,15 @@ export class AuditLogService {
       totalItems: count,
     };
     return sendSuccessPaginationResponse(successData);
+  }
+
+  private buildStringParams(email: string): QueryFilter {
+    let queryStrings = '1 = 1';
+    const queryParams = {};
+    if (email) {
+      queryStrings = `${queryStrings} and userLog.email = :email`;
+      setWith(queryParams, 'email', email);
+    }
+    return { queryStrings, queryParams };
   }
 }

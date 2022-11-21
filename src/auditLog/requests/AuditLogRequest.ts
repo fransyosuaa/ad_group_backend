@@ -1,8 +1,14 @@
-import { IsEmail, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class GetLogsByEmailRequest {
-  @IsNotEmpty()
   @IsEmail()
+  @IsOptional()
   email: string;
 
   @IsString()

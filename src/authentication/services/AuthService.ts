@@ -8,7 +8,7 @@ import { User, UserLog } from '../entities';
 import { mapLoginResponse } from '../../common/utils';
 import { LoginResponse, LogoutResponse } from '../response/AuthResponse';
 import { CreateUserLogRequest, LogoutRequest } from '../requests/UserRequests';
-import { ActionLogType } from '../enums';
+import { ActionLogType, UserType } from '../enums';
 
 @Injectable()
 export class AuthService {
